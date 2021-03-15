@@ -10,18 +10,18 @@ library(here)
 ## data were taken form the "version 3..." tab of the file "\\hlm\data\project
 ##    \Coghill_Research\HIV and Cancer_Tissue and Abstraction
 ##    \dataset QC and reviews\documented version and QC"
-path_icd_hiv <- here("data/raw_data/icd_codes_hiv.xlsx")
+path_icd_hiv <- here("data/raw_data/icd_codes_hiv.csv")
 
 ## transplant codes
-path_icd_transplant <- here("data/raw_data/icd_codes_transplant.xlsx")
+path_icd_transplant <- here("data/raw_data/icd_codes_transplant.csv")
 
 ## codes for other immune-related defficiencies
-path_icd_immune <- here("data/raw_data/icd_codes_immune_related_defficiencies.xlsx")
+path_icd_immune <- here("data/raw_data/icd_codes_immune_related_defficiencies.csv")
 
 ## read the data from file
-df_icd_hiv <- read_xlsx(path_icd_hiv)
-df_icd_transplant <- read_xlsx(path_icd_transplant)
-df_icd_immune <- read_xlsx(path_icd_immune)
+df_icd_hiv <- read_csv(path_icd_hiv)
+df_icd_transplant <- read_csv(path_icd_transplant)
+df_icd_immune <- read_csv(path_icd_immune)
 
 # separate the HIV ICD codes from the description
 df_icd_hiv <-
