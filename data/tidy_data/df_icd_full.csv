@@ -25,8 +25,23 @@ Z21,ASYMPTOMATIC HUMAN IMMUNODEFICIENCY VIRUS INFECTION STATUS,inconclusive,HIV
 Z21.7,HUMAN IMMUNODEFICIENCY VIRUS (HIV) COUNSELING,inconclusive,HIV
 O98.71,HUMAN IMMUNODEFICIENCY VIRUS DISEASE COMPLICATING PREGNANCY,conclusive,HIV
 O98.7,HUMAN IMMUNODEFICIENCY VIRUS DISEASE COMPL PREG/CHILDBIRTH,conclusive,HIV
-Z94,Transplanted organ and tissue status,NA,Transplant
 D89.81,Graft versus Host disease,NA,Transplant
+Z94,Transplanted organ and tissue status,NA,Transplant
+Z94.0,Kidney transplant status,NA,Transplant
+Z94.1,Heart transplant status,NA,Transplant
+Z94.2,Lung transplant status,NA,Transplant
+Z94.3,Heart and lungs transplant status,NA,Transplant
+Z94.4,Liver transplant status,NA,Transplant
+Z94.5,Skin transplant status,NA,Transplant
+Z94.6,Bone transplant status,NA,Transplant
+Z94.7,Corneal transplant status,NA,Transplant
+Z94.8,Other transplanted organ and tissue status,NA,Transplant
+Z94.81,Bone marrow transplant status,NA,Transplant
+Z94.82,Intestine transplant status,NA,Transplant
+Z94.83,Pancreas transplant status,NA,Transplant
+Z94.84,Stem cells transplant status,NA,Transplant
+Z94.89,Other transplanted organ and tissue status,NA,Transplant
+Z94.9,"Transplanted organ and tissue status, unspecified",NA,Transplant
 D71,Functional Disorders of Polymorphonuclear Neutrophils,NA,Immune-related defficiencies
 D80.0,Hereditary hypogammaglobulinemia,NA,Immune-related defficiencies
 D80.1,Nonfamilial hypogammaglobulinemia,NA,Immune-related defficiencies

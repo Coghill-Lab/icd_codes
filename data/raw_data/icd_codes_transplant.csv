@@ -1,3 +1,18 @@
 ﻿ICD_codes
-Z94 Transplanted organ and tissue status
 D89.81 Graft versus Host disease
+Z94 Transplanted organ and tissue status
+Z94.0 Kidney transplant status
+Z94.1 Heart transplant status
+Z94.2 Lung transplant status
+Z94.3 Heart and lungs transplant status
+Z94.4 Liver transplant status
+Z94.5 Skin transplant status
+Z94.6 Bone transplant status
+Z94.7 Corneal transplant status
+Z94.8 Other transplanted organ and tissue status
+Z94.81 Bone marrow transplant status
+Z94.82 Intestine transplant status
+Z94.83 Pancreas transplant status
+Z94.84 Stem cells transplant status
+Z94.89 Other transplanted organ and tissue status
+"Z94.9 Transplanted organ and tissue status, unspecified"
