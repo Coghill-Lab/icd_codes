@@ -32,7 +32,7 @@ df_icd_hiv <-
     mutate(disease_category = "HIV")
 
 
-# separate the HIV ICD codes from the description
+# separate the transplant ICD codes from the description
 df_icd_transplant <-
     df_icd_transplant %>% 
     separate(ICD_codes, into = c("icd_code", "icd_description"), 
@@ -40,7 +40,7 @@ df_icd_transplant <-
              extra = "merge") %>% 
     mutate(disease_category = "Transplant")
 
-# separate the HIV ICD codes from the description
+# separate the other immune ICD codes from the description
 df_icd_immune <-
     df_icd_immune %>% 
     separate(ICD_codes, into = c("icd_code", "icd_description"), 
