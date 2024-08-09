@@ -1,0 +1,211 @@
+---
+title: "Coghill Research - Disk quota exceeded"
+subtitle: "Directory Size analysis"
+author: "Nathan W. Van Bibber"
+date: "`r format(Sys.Date(), format = '%m-%d-%Y')`"
+params:
+  show_code: false
+  run_counts: false
+output: 
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: true
+    df_print: paged
+    code_folding: hide
+    theme: flatly
+    highlight: tango
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = params$show_code,
+                      message = FALSE,
+                      # results = "hide",
+                      warning = FALSE,
+                      comment = "",
+                      fig.align='center'
+                      )
+```
+
+
+```{r}
+library(fs)
+library(here)
+library(tidyverse)
+library(reactable)
+```
+
+```{r eval=params$run_counts}
+if (params$run_counts) {
+  coghill_research <- 
+    fs::dir_info("//hlm/data/project/Coghill_Research", recurse = F)
+}
+```
+
+
+```{r eval=FALSE}
+if (FALSE) {
+  path_prostate <- 
+    coghill_research %>% 
+    filter(str_detect(path, "prostate")) %>% 
+    pull(path)
+  
+  prostate_cancer_proj <- 
+    dir_info(path = path_prostate, recurse = T)
+  
+  prostate_cancer_proj %>% 
+    summarise(
+      total_size = sum(size, na.rm = T)
+    )
+}
+```
+
+
+```{r}
+if (params$run_counts) {
+  
+  coghill_research_recurse <- 
+    coghill_research %>% 
+    filter(type == "directory") %>% 
+    mutate(
+      directory = str_remove(path, "//hlm/data/project/Coghill_Research/"), 
+      path_0 = path,
+      .before = 0L
+    ) %>% 
+    ## test with only a few directories
+    # filter(str_detect(directory, "prostate")|str_detect(directory, "Grace")) %>%
+    # group_by(directory) %>% 
+    nest(
+      .by = c(directory, path_0),
+      .key = "dir_info_0"
+    ) %>% 
+    mutate(
+      dir_info = map(path_0, ~ dir_info(.x, recurse = TRUE))
+    )
+  
+  file_name <- paste0(Sys.Date(), "_coghill_research_recurse", ".rds")
+
+  write_rds(coghill_research_recurse, here("data/tidy_data", file_name))
+  
+} else {
+  coghill_research_recurse <- 
+    read_rds(here("data/tidy_data", "2024-08-07_coghill_research_recurse.rds"))
+}
+```
+
+<br>
+
+# Top-level directory size
+
+Currently, there are `r nrow(coghill_research_recurse)` top-level directories in 
+*Coghill_Research*. Here are the largest files using more than 1GB of storage space.
+
+```{r}
+coghill_research_recurse %>% 
+  unnest(dir_info) %>% 
+  summarise(
+    n_files = n(),
+    total_size = sum(size, na.rm = T),
+    .by = directory
+  ) %>% 
+  arrange(desc(total_size)) %>%
+  filter(total_size > fs_bytes("1G")) %>% 
+  gt::gt() %>% 
+  # gt::cols_width(
+  #   n_files ~ px(120),
+  #   total_size ~ px(120)
+  # ) %>% 
+  gt::cols_align(align = "right", columns = total_size) 
+```
+
+<br>
+
+It looks like *ORIEN_HIV (MCC 21527)* is the culprit!
+
+<br>
+
+## ORIEN sub-sirectories
+
+```{r}
+coghill_research_recurse_subdir <- 
+  coghill_research_recurse %>% 
+  unnest(dir_info) %>% 
+  filter(str_detect(directory, "ORIEN")) %>%
+  # filter(type == "directory") %>% 
+  # count(path) %>% count(n)
+  mutate(
+    sub_directory = str_remove(path, "//hlm/data/project/Coghill_Research/ORIEN_HIV \\(MCC 21527\\)/"),
+    # path = str_remove(path, "//hlm/data/project/Coghill_Research/ORIEN_HIV (MCC 21527)/")
+    .before = 0L
+  ) %>% 
+  separate_wider_delim(sub_directory, delim = "/", names_sep = "", too_few = "align_start")
+
+```
+
+
+WES and RNAseq data in *Orien_21PRJ081MCC* and *21PRJ108MCC_Coghill* use up almost 
+all of the available disk space.
+
+<br>
+
+```{r eval=FALSE}
+coghill_research_recurse_subdir %>% 
+  summarise(
+    n_files = n(),
+    total_size = sum(size, na.rm = T),
+    .by = sub_directory1
+  ) %>% 
+  arrange(desc(total_size)) %>% 
+  filter(n_files > 1)
+```
+
+```{r}
+coghill_research_recurse_subdir %>% 
+  summarise(
+    n_files = n(),
+    total_size = sum(size, na.rm = T),
+    .by = c(sub_directory1, sub_directory2)
+  ) %>% 
+  arrange(desc(total_size)) %>% 
+  # filter(n_files > 1) %>% 
+  filter(total_size > fs_bytes("1G")) %>% 
+  gt::gt() %>% 
+  # gt::cols_width(
+  #   starts_with("sub") ~ px(230),
+  #   total_size ~ px(120)
+  # ) %>% 
+  gt::cols_align(align = "right", columns = total_size)
+
+```
+
+
+
+
+```{r}
+paths_wes_seq <- 
+  coghill_research_recurse_subdir %>% 
+  filter(sub_directory2 %in% c("WES", "RNAseq")) %>% 
+  pull(path)
+  
+everything_else <- 
+  coghill_research_recurse %>% 
+  unnest(dir_info) %>% 
+  filter(!path %in% paths_wes_seq) %>% 
+  summarise(
+    n_files = n(),
+    total_size = sum(size, na.rm = T),
+    # .by = c(sub_directory1, sub_directory2)
+  )
+```
+
+<br>
+
+Not including WES and RNAseq data, all other files in *Coghill_Research* occupy 
+`r paste0(everything_else$total_size, "B")` of storage space.
+
+
+***
+
+<br>
+<br>
+
